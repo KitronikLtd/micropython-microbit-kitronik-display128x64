@@ -47,8 +47,8 @@ class Kitronik128x64Display:
     def set_pos(self, col=0, page=0):
         self.command([0xb0 | page])  # page number
         # take upper and lower value of col * 2
-        c1 = col & 0xFF
-        c2 = (col >> 4) & 0xFF
+        c1 = col % 16
+        c2 = col >> 4
         self.command([0x00 | c1])  # lower start column address
         self.command([0x10 | c2])  # upper start column address
 
@@ -64,27 +64,27 @@ class Kitronik128x64Display:
             x = 127     # if it does set to display limit
         if y > 63:      #check that y does not exceed display limit
             y = 63      # if it does set to display limit
-        shift_page = y % 8
         page = y >> 3
-        #page, shift_page = divmod(y, 8)
+        shift_page = y % 8
         ind = x + page * 128 + 1
         screenPixel = (self.screen[ind] | (1 << shift_page))
         pack_into(">BB", self.screen, ind, screenPixel)
-        self.set_pos(self,x, page)
-        i2c.write(0x3c, bytearray([0x40, screenPixel]))
+        self.set_pos(x, page)
+        print(screenPixel)
+        i2c.write(self.ADDR, bytearray([0x40, screenPixel]))
 
     def clear_px(self, x, y):
         if x > 127:     #check that x does not exceed display limit
             x = 127     # if it does set to display limit
         if y > 63:      #check that y does not exceed display limit
             y = 63      # if it does set to display limit
-        shift_page = y % 8
         page = y >> 3
+        shift_page = y % 8
         ind = x + page * 128 + 1
         screenPixel = (self.screen[ind] & ~ (1 << shift_page))
-        pack_into(">BB", self.screen, ind, screenPixel)
-        self.set_pos(self, x, page)
-        i2c.write(0x3c, bytearray([0x40, screenPixel]))
+        pack_into(">B", self.screen, ind, screenPixel)
+        self.set_pos(x, page)
+        i2c.write(self.ADDR, bytearray([0x40, screenPixel]))
 
     #draw vertical line from a x,y point, line will be drawn from top to bottom
     def draw_vert_line(self, x, y, length):
@@ -92,7 +92,7 @@ class Kitronik128x64Display:
             length = 63     # if it does set to display limit
         i = y
         for i in range(y, (y + length)):
-            self.set_px(self, x, i)
+            self.set_px(x, i)
 
     #draw horizontal line from a x,y point, line will be drawn from left to right
     def draw_horz_line(self, x, y, length):
@@ -100,13 +100,13 @@ class Kitronik128x64Display:
             length = 127     # if it does set to display limit
         i = x
         for i in range(x, (x + length)):
-            self.set_px(self, i, y)
+            self.set_px(i, y)
 
     #draw diaganal line to the right and up a x,y point
     def draw_diaganal_right(self, x, y, length):
         i = x
         for i in range(x, (x + length)):
-            self.set_px(self, i, y)
+            self.set_px(i, y)
             y -= 1
 
     #draw diaganal line to the left and up a x,y point
@@ -115,7 +115,7 @@ class Kitronik128x64Display:
         i = x
         y = y - length
         for i in range(x, (x + length)):
-            self.set_px(self, i, y)
+            self.set_px(i, y)
             y += 1
     
     #draw a rectangle with x-y being top left of the rectangle. The width and height being the number of pixels from that point
@@ -131,7 +131,7 @@ class Kitronik128x64Display:
 
     #update will
     def update_screen(self):
-        self.set_pos(self)  #set position to start of display
+        self.set_pos()  #set position to start of display
         i2c.write(self.ADDR, self.screen) #write data to the screen
 
     #Taking a number or string to display a text representation onto the screen
@@ -151,6 +151,6 @@ class Kitronik128x64Display:
                     col = col | (1 << r) if (p != 0) else col
                 ind = x * 5 + row * 128 + i * 5 + c + 1
                 self.screen[ind] = col
-        self.set_pos(self, x * 5, row)
+        self.set_pos(x * 5, row)
         ind0 = x * 5 + row * 128 + 1
         i2c.write(self.ADDR, b'\x40' + self.screen[ind0:ind])
