@@ -7,23 +7,23 @@ A class and sample code to use the Kitronik VIEW 128x64 Display for BBC micro:bi
 
 This will initialise the PCA to default values.
 ## Clear the display:
-    view.clear_display(view)
+    view.clear_display()
 This will remove all data on the screen
 
 ## Set pixel:
-    view.set_px(view, x, y)
+    view.set_px(x, y)
 Set pixel will allow control of a single pixel to turn on where:
 * x => 0 to 127
 * y => 0 to 63
 
 ## Clear pixel:
-    view.clear_px(view, x, y)
+    view.clear_px(x, y)
 Clear pixel will allow control of a single pixel to turn pff where:
 * x => 0 to 127
 * y => 0 to 63
 
 ### Draw vertical line:
-    view.draw_vert_line(view, x, y, length)
+    view.draw_vert_line(x, y, length)
 Allow to draw a vertical on ths display where:
 * x => 0 to 127
 * y => 0 to 63
@@ -31,7 +31,7 @@ Allow to draw a vertical on ths display where:
 The line is draw from top edge downwards
 
 ### Draw horizontal line:
-    view.draw_horz_line(view, x, y, length)
+    view.draw_horz_line(x, y, length)
 Allow to draw a horizontal on ths display where:
 * x => 0 to 127
 * y => 0 to 63
@@ -39,9 +39,16 @@ Allow to draw a horizontal on ths display where:
 The line is draw from left edge to the right
 
 ### Draw rectangle shape:
-    view.draw_rect(view, x, y, width, height)
+    view.draw_rect(x, y, width, height)
 Allow to draw a rectange or sqaure with a starting point in the top left:
 * x => 0 to 127
 * y => 0 to 63
 * width => 0 to 127
 * height => 0 to 63
+
+### Display text
+    display_as_text(inputData, x, y)
+Allow to display either a string, number or variable on to the display.
+* inputData => number or string
+* x => 0 to 127
+* y => 0 to 63
