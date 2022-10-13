@@ -1,3 +1,4 @@
+# microbit-module: Kitronik128x64Display@1.0.0
 # Kitronik VIEW 128x64 Display micropython library for the micro:bit
 # Display uses SSD1306 driver via I2C connection
 # Display resolution is 128 x 64
